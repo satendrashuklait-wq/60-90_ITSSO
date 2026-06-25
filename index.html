@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>लॉगिन प्रणाली</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* पूरे पेज में सबसे ऊपर दाहिने से बाएं तैरती हुई हेडिंग */
+        .marquee-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #1a365d, #2a4365);
+            color: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            white-space: nowrap;
+            border-bottom: 4px solid #d69e2e; /* नीचे गोल्डन पट्टी */
+        }
+
+        .marquee-text {
+            display: inline-block;
+            font-size: 26px;
+            font-weight: bold;
+            padding-left: 100%;
+            animation: marqueeAnimation 18s linear infinite;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* दाहिने से बाएं चलने का एनीमेशन */
+        @keyframes marqueeAnimation {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+            100% {
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
+
+        /* लॉगिन बॉक्स */
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            margin-top: 50px; /* हेडिंग से दूरी बनाए रखने के लिए */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #3182ce;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a365d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2a4365;
+        }
+        .error-message {
+            color: #e53e3e;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="marquee-container">
+    <div class="marquee-text">
+        60-90 दिवस में निस्तारित होने वाले अभियोग एवं ITSSO ट्रैकिंग प्रणाली
+    </div>
+</div>
+
+<div class="login-container">
+    <form id="loginForm" onsubmit="return validateLogin(event)">
+        <div class="form-group">
+            <label for="username">यूज़र नेम (User Name)</label>
+            <input type="text" id="username" required placeholder="यूज़र नेम दर्ज करें" autocomplete="off">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">पासवर्ड (Password)</label>
+            <input type="password" id="password" required placeholder="पासवर्ड दर्ज करें" autocomplete="off">
+        </div>
+        
+        <button type="submit">लॉगिन करें</button>
+        
+        <div id="error" class="error-message">गलत यूज़र नेम या पासवर्ड! कृपया पुनः प्रयास करें।</div>
+    </form>
+</div>
+
+<script>
+// राइट-क्लिक डिसेबल करने के लिए
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// कीबोर्ड शॉर्टकट (Inspect Element) ब्लॉक करने के लिए
+document.addEventListener('keydown', function(e) {
+    if (e.key === "F12" || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || 
+        (e.ctrlKey && e.key === 'u')) {
+        e.preventDefault();
+    }
+});
+
+function validateLogin(event) {
+    event.preventDefault(); 
+    
+    var userInp = document.getElementById("username").value;
+    var passInp = document.getElementById("password").value;
+    var errorDiv = document.getElementById("error");
+    
+    if (userInp === "9454400260" && passInp === "cctns@123") {
+        errorDiv.style.display = "none";
+        window.location.href = "file:///C:/Users/acer/Downloads/60-90_ITSSO_FINAL%20(1).html";
+    } else {
+        errorDiv.style.display = "block";
+    }
+}
+</script>
+
+</body>
+</html>
