@@ -151,7 +151,8 @@
             thead { display: table-header-group; }
             #dashTable tfoot { display: table-row-group !important; }
             tr { page-break-inside: avoid; }
-            th { position: static !important; background-color: #2d3748 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none !important;}
+            th { position: static !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none !important;}
+            #mainTable th { background-color: #2d3748 !important; color: white !important; }
             #dashTable tfoot td { position: static !important; background-color: #cbd5e0 !important; color: #1a365d !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none !important; }
             td, th { border: 1px solid #000 !important; }
             .c-green, .c-yellow, .c-orange, .c-red { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -575,7 +576,7 @@ function processGoogleSheetJSON(json) {
 
     } catch(err) {
         console.error("त्रुटि: ", err);
-        alert("डेटा को प्रोसेस करने में त्रुटि आई है।");
+        alert("डेटा को प्रोसेस करने में त्रुटि आई।");
         document.getElementById('totDisplay').textContent = "डेटा लोड विफल";
     }
 }
@@ -750,10 +751,10 @@ function filterAndRender() {
         if (currentMode === "6090" && tFilter) {
             if (tFilter === "all_90" && r._deadline !== "90 दिवस") return false;
             if (tFilter === "all_60" && r._deadline !== "60 दिवस") return false;
-            if (tFilter === "90_pending" && (r._deadline !== "90 दिवस" || r._elapsed > 90)) return false;
-            if (tFilter === "60_pending" && (r._deadline !== "60 दिवस" || r._elapsed > 60)) return false;
-            if (tFilter === "90_delayed" && (r._deadline !== "90 दिवस" || r._elapsed <= 90)) return false;
-            if (tFilter === "60_delayed" && (r._deadline !== "60 दिवस" || r._elapsed <= 60)) return false;
+            if (tFilter === "90_pending" && (r._deadline !== "90 दिवस" || r._elapsed >= 90)) return false;
+            if (tFilter === "60_pending" && (r._deadline !== "60 दिवस" || r._elapsed >= 60)) return false;
+            if (tFilter === "90_delayed" && (r._deadline !== "90 दिवस" || r._elapsed < 90)) return false;
+            if (tFilter === "60_delayed" && (r._deadline !== "60 दिवस" || r._elapsed < 60)) return false;
         }
 
         if (daysFrom !== "" && r._elapsed < parseInt(daysFrom)) return false;
@@ -889,21 +890,21 @@ function generateDashboard(data) {
             let d = r._elapsed;
             if (currentMode === "6090") {
                 if (r._deadline === "90 दिवस") {
-                    if (d > 90) dashData[c][ps].d90.r++;
+                    if (d >= 90) dashData[c][ps].d90.r++;
                     else if (d < 50) dashData[c][ps].d90.g++;
                     else if (d >= 50 && d <= 80) dashData[c][ps].d90.y++;
-                    else if (d > 80 && d <= 90) dashData[c][ps].d90.o++;
+                    else if (d > 80 && d < 90) dashData[c][ps].d90.o++;
                 } else {
-                    if (d > 60) dashData[c][ps].d60.r++;
+                    if (d >= 60) dashData[c][ps].d60.r++;
                     else if (d < 40) dashData[c][ps].d60.g++;
                     else if (d >= 40 && d <= 50) dashData[c][ps].d60.y++;
-                    else if (d > 50 && d <= 60) dashData[c][ps].d60.o++;
+                    else if (d > 50 && d < 60) dashData[c][ps].d60.o++;
                 }
             } else {
-                if (d > 60) dashData[c][ps].r++;
+                if (d >= 60) dashData[c][ps].r++;
                 else if (d <= 39) dashData[c][ps].g++; 
                 else if (d >= 40 && d <= 49) dashData[c][ps].y++;
-                else if (d >= 50 && d <= 60) dashData[c][ps].o++;
+                else if (d >= 50 && d < 60) dashData[c][ps].o++;
             }
         }
     });
@@ -920,13 +921,13 @@ function generateDashboard(data) {
             <tr>
                 <th class="c-green" style="color: black !important;">0-49 दिन</th>
                 <th class="c-yellow" style="color: black !important;">50-80 दिन</th>
-                <th class="c-orange" style="color: black !important;">81-90 दिन</th>
-                <th class="c-red" style="color: black !important;">&gt; 90 दिन</th>
+                <th class="c-orange" style="color: black !important;">81-89 दिन</th>
+                <th class="c-red" style="color: black !important;">&gt;= 90 दिन</th>
                 <th class="border-bold-right" style="background-color: #e2e8f0; color: black !important;">90 योग</th>
                 <th class="c-green" style="color: black !important;">0-39 दिन</th>
                 <th class="c-yellow" style="color: black !important;">40-50 दिन</th>
-                <th class="c-orange" style="color: black !important;">51-60 दिन</th>
-                <th class="c-red" style="color: black !important;">&gt; 60 दिन</th>
+                <th class="c-orange" style="color: black !important;">51-59 दिन</th>
+                <th class="c-red" style="color: black !important;">&gt;= 60 दिन</th>
                 <th class="border-bold-right" style="background-color: #e2e8f0; color: black !important;">60 योग</th>
             </tr>`;
 
@@ -995,8 +996,8 @@ function generateDashboard(data) {
             <tr>
                 <th class="c-green" style="color: black !important;">0-39 दिन</th>
                 <th class="c-yellow" style="color: black !important;">40-49 दिन</th>
-                <th class="c-orange" style="color: black !important;">50-60 दिन</th>
-                <th class="c-red" style="color: black !important;">&gt; 60 दिन</th>
+                <th class="c-orange" style="color: black !important;">50-59 दिन</th>
+                <th class="c-red" style="color: black !important;">&gt;= 60 दिन</th>
                 <th class="total-cell" style="background-color: #edf2f7; color: #1a365d !important;">कुल योग</th>
             </tr>`;
 
@@ -1051,21 +1052,21 @@ function showSpecificList(circle, ps, cat) {
 
         if (cat === '90_g') return r._deadline === "90 दिवस" && d < 50;
         if (cat === '90_y') return r._deadline === "90 दिवस" && d >= 50 && d <= 80;
-        if (cat === '90_o') return r._deadline === "90 दिवस" && d > 80 && d <= 90;
-        if (cat === '90_r') return r._deadline === "90 दिवस" && d > 90;
+        if (cat === '90_o') return r._deadline === "90 दिवस" && d > 80 && d < 90;
+        if (cat === '90_r') return r._deadline === "90 दिवस" && d >= 90;
         if (cat === '90_t') return r._deadline === "90 दिवस";
 
         if (cat === '60_g') return r._deadline === "60 दिवस" && d < 40;
         if (cat === '60_y') return r._deadline === "60 दिवस" && d >= 40 && d <= 50;
-        if (cat === '60_o') return r._deadline === "60 दिवस" && d > 50 && d <= 60;
-        if (cat === '60_r') return r._deadline === "60 दिवस" && d > 60;
+        if (cat === '60_o') return r._deadline === "60 दिवस" && d > 50 && d < 60;
+        if (cat === '60_r') return r._deadline === "60 दिवस" && d >= 60;
         if (cat === '60_t') return r._deadline === "60 दिवस";
         if (cat === 'all_t') return true;
 
         if (cat === 'itsso_g') return d <= 39;
         if (cat === 'itsso_y') return d >= 40 && d <= 49;
-        if (cat === 'itsso_o') return d >= 50 && d <= 60;
-        if (cat === 'itsso_r') return d > 60;
+        if (cat === 'itsso_o') return d >= 50 && d < 60;
+        if (cat === 'itsso_r') return d >= 60;
         if (cat === 'itsso_t') return true;
 
         return false;
@@ -1093,21 +1094,21 @@ function renderListTable(res) {
 
         if (currentMode === "6090") {
             if (r._deadline === "90 दिवस") {
-                if (d > 90) cls = "c-red";
+                if (d >= 90) cls = "c-red";
                 else if (d < 50) cls = "c-green";
                 else if (d >= 50 && d <= 80) cls = "c-yellow";
-                else if (d > 80 && d <= 90) cls = "c-orange";
+                else if (d > 80 && d < 90) cls = "c-orange";
             } else {
-                if (d > 60) cls = "c-red";
+                if (d >= 60) cls = "c-red";
                 else if (d < 40) cls = "c-green";
                 else if (d >= 40 && d <= 50) cls = "c-yellow";
-                else if (d > 50 && d <= 60) cls = "c-orange";
+                else if (d > 50 && d < 60) cls = "c-orange";
             }
         } else {
-            if (d > 60) cls = "c-red";
+            if (d >= 60) cls = "c-red";
             else if (d <= 39) cls = "c-green";
             else if (d >= 40 && d <= 49) cls = "c-yellow";
-            else if (d >= 50 && d <= 60) cls = "c-orange";
+            else if (d >= 50 && d < 60) cls = "c-orange";
         }
 
         if (cls) tr.className = cls;
@@ -1159,29 +1160,77 @@ function smartPrint() {
 }
 
 function smartExcel() {
-    let choice = prompt("आप Excel में क्या एक्सपोर्ट करना चाहते हैं?\n\n1 - केवल एनालिटिक्स (डैशबोर्ड)\n2 - केवल डेटा (मेन टेबल)\n3 - दोनों (अलग-अलग शीट में)\n\n(कृपया 1, 2 या 3 टाइप करें)", "3");
+    let choice = prompt("आप Excel में क्या एक्सपोर्ट करना चाहते हैं?\n\n1 - केवल एनालिटिक्स (डैशबोर्ड)\n2 - केवल डेटा (मेन टेबल)\n3 - दोनों (एक ही शीट में ऊपर-नीचे)\n\n(कृपया 1, 2 या 3 टाइप करें)", "3");
     if(choice === null || choice === "") return;
 
-    let wb = XLSX.utils.book_new();
     let nameSuffix = (currentMode === "6090") ? "6090_Day" : "ITSSO";
     
+    let htmlStr = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; margin-bottom: 20px;}
+            th, td { border: 1px solid #cbd5e0; padding: 6px; text-align: center; mso-number-format:"\\@"; }
+            .td-text { text-align: left; }
+        </style>
+    </head><body>`;
+
+    function applyInlineColors(tableEl) {
+        if(!tableEl) return null;
+        let clone = tableEl.cloneNode(true);
+        
+        clone.querySelectorAll('.c-green').forEach(el => { el.style.backgroundColor = '#c6f6d5'; el.style.color = '#22543d'; });
+        clone.querySelectorAll('.c-yellow').forEach(el => { el.style.backgroundColor = '#fefcbf'; el.style.color = '#744210'; });
+        clone.querySelectorAll('.c-orange').forEach(el => { el.style.backgroundColor = '#feebc8'; el.style.color = '#c05621'; });
+        clone.querySelectorAll('.c-red').forEach(el => { el.style.backgroundColor = '#fed7d7'; el.style.color = '#9b2c2c'; });
+        clone.querySelectorAll('.total-cell').forEach(el => { el.style.backgroundColor = '#edf2f7'; el.style.color = '#1a365d'; el.style.fontWeight = 'bold'; });
+        
+        clone.querySelectorAll('thead th.st-circle').forEach(el => { el.style.backgroundColor = '#1a365d'; el.style.color = 'white'; });
+        clone.querySelectorAll('thead th.st-thana').forEach(el => { el.style.backgroundColor = '#2d3748'; el.style.color = 'white'; });
+        
+        if (clone.id === 'mainTable') {
+            clone.querySelectorAll('thead th').forEach(el => { 
+                el.style.backgroundColor = '#2d3748'; 
+                el.style.color = 'white'; 
+            });
+            clone.querySelectorAll('tbody tr.c-green td').forEach(el => { el.style.backgroundColor = '#c6f6d5'; el.style.color = '#22543d'; });
+            clone.querySelectorAll('tbody tr.c-yellow td').forEach(el => { el.style.backgroundColor = '#fefcbf'; el.style.color = '#744210'; });
+            clone.querySelectorAll('tbody tr.c-orange td').forEach(el => { el.style.backgroundColor = '#feebc8'; el.style.color = '#c05621'; });
+            clone.querySelectorAll('tbody tr.c-red td').forEach(el => { el.style.backgroundColor = '#fed7d7'; el.style.color = '#9b2c2c'; });
+        }
+
+        clone.querySelectorAll('tfoot td.st-circle, tfoot td.st-thana').forEach(el => { el.style.backgroundColor = '#cbd5e0'; el.style.color = '#1a365d'; el.style.fontWeight = 'bold';});
+        
+        return clone;
+    }
+
     if (choice === "1" || choice === "3") {
         let dashBox = document.getElementById("dashboardBox");
         if(dashBox.style.display !== 'none') {
-            let dashSheet = XLSX.utils.table_to_sheet(document.getElementById("dashTable"), { raw: true });
-            XLSX.utils.book_append_sheet(wb, dashSheet, "Analytics Dashboard");
+            htmlStr += "<h3>Analytics Dashboard</h3>";
+            let dashTable = applyInlineColors(document.getElementById("dashTable"));
+            htmlStr += dashTable.outerHTML;
+            htmlStr += "<br><br>";
         }
     }
     if (choice === "2" || choice === "3") {
-        let mainSheet = XLSX.utils.table_to_sheet(document.getElementById("mainTable"), { raw: true });
-        XLSX.utils.book_append_sheet(wb, mainSheet, "Data List");
+        htmlStr += "<h3>Data List</h3>";
+        let mainTable = applyInlineColors(document.getElementById("mainTable"));
+        htmlStr += mainTable.outerHTML;
     }
     
-    if(wb.SheetNames.length > 0) {
-        XLSX.writeFile(wb, `BNS_Bareilly_Report_${nameSuffix}.xlsx`);
-    } else {
-        alert("एक्सपोर्ट करने के लिए कोई डेटा नहीं है!");
-    }
+    htmlStr += `</body></html>`;
+    
+    let blob = new Blob([htmlStr], { type: "application/vnd.ms-excel" });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = `BNS_Bareilly_Report_${nameSuffix}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 </script>
 </body>
