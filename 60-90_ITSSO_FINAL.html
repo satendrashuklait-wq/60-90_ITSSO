@@ -834,14 +834,12 @@ function generateDashboard(data) {
     let dashData = {};
     
     if (isSearchActive) {
-        // नया संशोधन लॉजिक: यदि कीवर्ड सर्च में कोई सर्किल या थाने का स्पष्ट नाम लिखा गया है
         let lowerKeyword = keyword.toLowerCase();
         let matchedThanasFromMap = Object.keys(mapPSToCircle).filter(ps => {
             let c = mapPSToCircle[ps];
             return ps.toLowerCase().includes(lowerKeyword) || c.toLowerCase().includes(lowerKeyword);
         });
 
-        // 1. पहले केस रिकॉर्ड्स के अनुसार स्ट्रक्चर भरें
         data.forEach(r => {
             let c = r._circle; let ps = r._cleanPS;
             if (selCircles.includes(c)) {
@@ -856,7 +854,6 @@ function generateDashboard(data) {
             }
         });
 
-        // 2. यदि कीवर्ड में सर्किल/थाना लिखा है, तो उन्हें भी अनिवार्य रूप से जोड़ें (भले ही केस डेटा शून्य हो)
         matchedThanasFromMap.forEach(ps => {
             let c = mapPSToCircle[ps];
             if (selCircles.includes(c)) {
@@ -1171,12 +1168,12 @@ function smartExcel() {
     if (choice === "1" || choice === "3") {
         let dashBox = document.getElementById("dashboardBox");
         if(dashBox.style.display !== 'none') {
-            let dashSheet = XLSX.utils.table_to_sheet(document.getElementById("dashTable"));
+            let dashSheet = XLSX.utils.table_to_sheet(document.getElementById("dashTable"), { raw: true });
             XLSX.utils.book_append_sheet(wb, dashSheet, "Analytics Dashboard");
         }
     }
     if (choice === "2" || choice === "3") {
-        let mainSheet = XLSX.utils.table_to_sheet(document.getElementById("mainTable"));
+        let mainSheet = XLSX.utils.table_to_sheet(document.getElementById("mainTable"), { raw: true });
         XLSX.utils.book_append_sheet(wb, mainSheet, "Data List");
     }
     
